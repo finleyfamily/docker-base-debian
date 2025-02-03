@@ -103,7 +103,6 @@ jobs:
           cache-to: type=gha,mode=max
           context: .
           file: ${{ inputs.file }}
-          load: true
           platforms: ${{ inputs.platforms }}
           push: false
           tags: |
