@@ -1,0 +1,111 @@
+name: Docker
+
+concurrency:
+  group: queue
+
+on:
+  workflow_call:
+    inputs:
+      file:
+        default: Dockerfile
+        description: Path to Dockerfile to build.
+        required: false
+        type: string
+      platforms:
+        default: linux/amd64, linux/arm64, linux/arm/v7
+        description: List of target platforms for build.
+        required: false
+        type: string
+
+jobs:
+  changes:
+    outputs:
+      add-on: ${{ steps.changes.outputs.image }}
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v4
+      - name: ℹ️ Determine file changes
+        id: changes
+        uses: dorny/paths-filter@v3.0.2
+        with:
+          filters: |
+            image:
+              - .github/workflows/docker.yml
+              - Dockerfile
+              - rootfs/**
+  information:
+    if: needs.changes.outputs.image == 'true'
+    name: ℹ️ Gather information
+    needs:
+      - changes
+    runs-on: ubuntu-latest
+    outputs:
+      architectures: ${{ steps.information.outputs.architectures }}
+      base_image_signer: ${{ steps.information.outputs.codenotary_base_image }}
+      build: ${{ steps.information.outputs.build }}
+      description: ${{ steps.information.outputs.description }}
+      environment: ${{ steps.release.outputs.environment }}
+      name: ${{ steps.information.outputs.name }}
+      signer: ${{ steps.information.outputs.codenotary_signer }}
+      target: ${{ steps.information.outputs.target }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v4
+      - name: ℹ️ Gather version and environment
+        id: release
+        run: |
+          sha="${{ github.sha }}"
+          environment="edge"
+          version="${sha:0:7}"
+          if [[ "${{ github.event_name }}" = "release" ]]; then
+            version="${{ github.event.release.tag_name }}"
+            version="${version,,}"
+            environment="stable"
+            if [[ "${{ github.event.release.prerelease }}" = "true" ]]; then
+              environment="beta"
+            fi
+          fi
+
+          echo "environment=${environment}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+  build:
+    if: needs.changes.outputs.image == 'true'
+    name: 👷 Build & Deploy
+    needs:
+      - changes
+      - information
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v4
+      - name: 🏗 Set up QEMU
+        uses: docker/setup-qemu-action@v3.3.0
+      - name: 🏗 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.8.0
+      - name: 🏗  Login to GitHub Container Registry
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: 🚀 Build
+        uses: docker/build-push-action@v6.13.0
+        with:
+          build-args: |
+            BUILD_REF=${{ github.sha }}
+            BUILD_REPOSITORY=${{ github.repository }}
+            BUILD_VERSION=${{ needs.information.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          context: .
+          file: ${{ inputs.file }}
+          load: true
+          platforms: ${{ inputs.platforms }}
+          push: false
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.information.outputs.environment }}
+            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.information.outputs.version }}
