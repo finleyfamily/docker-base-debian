@@ -20,7 +20,7 @@ on:
 jobs:
   changes:
     outputs:
-      add-on: ${{ steps.changes.outputs.image }}
+      image: ${{ steps.changes.outputs.image }}
     permissions:
       pull-requests: read
     runs-on: ubuntu-latest
