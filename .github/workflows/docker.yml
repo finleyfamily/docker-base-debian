@@ -11,11 +11,16 @@ on:
         description: Path to Dockerfile to build.
         required: false
         type: string
-      platforms:
+      image-platforms:
         default: linux/amd64, linux/arm64, linux/arm/v7
         description: List of target platforms for build.
         required: false
         type: string
+      push-image:
+        default: true
+        description: Whether to push the image after it has been built.
+        required: false
+        type: boolean
 
 jobs:
   changes:
@@ -64,7 +69,7 @@ jobs:
           if [[ "${{ github.event_name }}" = "release" ]]; then
             version="${{ github.event.release.tag_name }}"
             version="${version,,}"
-            environment="stable"
+            environment="latest"
             if [[ "${{ github.event.release.prerelease }}" = "true" ]]; then
               environment="beta"
             fi
@@ -103,8 +108,8 @@ jobs:
           cache-to: type=gha,mode=max
           context: .
           file: ${{ inputs.file }}
-          platforms: ${{ inputs.platforms }}
-          push: false
+          platforms: ${{ inputs.image-platforms }}
+          push: ${{ inputs.push-image }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.information.outputs.environment }}
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.information.outputs.version }}
