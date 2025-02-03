@@ -1,0 +1,21 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "github>finleyfamily/renovate",
+        "github>finleyfamily/renovate//presets/hass-addon"
+    ],
+    "packageRules": [
+        {
+            "automerge": true,
+            "automergeType": "pr",
+            "matchManagers": [
+                "pip_requirements"
+            ],
+            "platformAutomerge": true,
+            "rangeStrategy": "bump"
+        }
+    ],
+    "reviewers": [
+        "ITProKyle"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "cSpell.enabled": true,
+    "docker.languageserver.formatter.ignoreMultilineInstructions": true,
+    "editor.rulers": [
+        81,
+        88,
+        100
+    ],
+    "editor.tabSize": 4,
+    "files.insertFinalNewline": true
+}
