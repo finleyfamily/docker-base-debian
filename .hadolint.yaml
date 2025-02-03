@@ -8,7 +8,3 @@ label-schema:
   org.opencontainers.image.documentation: text
   org.opencontainers.image.source: text
   org.opencontainers.image.title: text
-  org.opencontainers.image.vendor: text
-  org.opencontainers.image.licenses: text
-  org.opencontainers.image.url: text
-  org.opencontainers.image.version: text

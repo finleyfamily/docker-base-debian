@@ -1,0 +1,13 @@
+#! /usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+PUID="${PUID:-568}";
+PGID="${PGID:-568}";
+USER_NAME="${_USER:-admin}";
+
+groupmod -o -g "$PGID" "${USER_NAME}"
+usermod -o -u "$PUID" "${USER_NAME}"
+
+lsiown "${USER_NAME}:${USER_NAME}" /app
+lsiown "${USER_NAME}:${USER_NAME}" /config
+lsiown "${USER_NAME}:${USER_NAME}" /defaults

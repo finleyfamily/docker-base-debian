@@ -5,5 +5,16 @@
     ],
     "maxNumberOfProblems": 100,
     "version": "0.2",
-    "words": []
+    "words": [
+        "contenv",
+        "crond",
+        "envfile",
+        "libbz",
+        "libncursesw",
+        "lsiown",
+        "noarch",
+        "PGID",
+        "PUID",
+        "svstat"
+    ]
 }
