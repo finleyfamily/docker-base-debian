@@ -75,7 +75,7 @@ RUN set -o errexit; \
 ###############################################################################
 # Install nvm                                                                 #
 # --------------------------------------------------------------------------- #
-RUN set -ex; \
+RUN set -e; \
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash; \
   source ~/.nvm/nvm.sh; \
   nvm install "lts/jod" --latest-npm; \
