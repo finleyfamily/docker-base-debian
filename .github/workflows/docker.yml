@@ -44,11 +44,33 @@ jobs:
               - .github/workflows/docker.yml
               - Dockerfile
               - rootfs/**
+  hadolint:
+    name: Hadolint
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v4
+      - name: 🚀 Run Hadolint
+        uses: brpaz/hadolint-action@v1.5.0  # cspell:words brpaz
+        with:
+          dockerfile: ${{ inputs.file }}
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v4
+      - name: 🚀 Run Shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0  # cspell:words ludeeus
+        env:
+          SHELLCHECK_OPTS: -s bash
   build:
     if: needs.changes.outputs.image == 'true'
     name: 👷 Build & Deploy
     needs:
       - changes
+      - hadolint
+      - shellcheck
     runs-on: ubuntu-latest
     steps:
       - name: ⤵️ Check out code from GitHub
@@ -65,7 +87,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: 👓 Extract metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v5.6.1
         with:
           annotations: |
             manifest:org.opencontainers.image.authors=Kyle Finley <kyle@finley.sh>
