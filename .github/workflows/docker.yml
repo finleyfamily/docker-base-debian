@@ -1,7 +1,7 @@
 name: Docker
 
 concurrency:
-  group: queue
+  group: ${{ github.ref }}
 
 on:
   workflow_call:
