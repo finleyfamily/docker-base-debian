@@ -7,10 +7,6 @@ FROM python:3.13.1@sha256:137ae4b9f85671bd912a82a19b6966e2655f73e13579b5d6ad4edb
 # Each arg must be defined in an "ARG" instruction for each stage before it
 # can be used in the build stage.
 #
-ARG BUILD_REPOSITORY="https://github.com/finleyfamily/docker-base-debian"
-ARG LABEL_AUTHOR="Kyle Finley <kyle@finley.sh>"
-ARG LABEL_DESCRIPTION="Base image for Debian Linux."
-ARG LABEL_DOCUMENTATION="https://github.com/finleyfamily/docker-base-debian"
 ARG OI_VERSION="v1.0.0"
 ARG S6_OVERLAY_VERSION="v3.2.0.2"
 ARG TARGETARCH
@@ -101,12 +97,6 @@ RUN set -o errexit; \
 
 COPY rootfs/ /
 RUN chmod 1777 /tmp
-
-LABEL org.opencontainers.image.authors="${LABEL_AUTHOR}" \
-  org.opencontainers.image.description="${LABEL_DESCRIPTION}" \
-  org.opencontainers.image.documentation="${LABEL_DOCUMENTATION}" \
-  org.opencontainers.image.source="${BUILD_REPOSITORY}" \
-  org.opencontainers.image.title="docker-base-debian "
 
 # Child images need to set this entrypoint if running an app
 # ENTRYPOINT ["/init"]

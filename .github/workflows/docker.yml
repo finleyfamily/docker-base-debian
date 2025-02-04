@@ -97,6 +97,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
+          annotations: |
+            manifest:org.opencontainers.image.authors=Kyle Finley <kyle@finley.sh>
+            index:org.opencontainers.image.authors=Kyle Finley <kyle@finley.sh>
+            manifest:org.opencontainers.image.documentation=${{ github.repositoryUrl }}
+            index=org.opencontainers.image.documentation=${{ github.repositoryUrl }}
           images: ${{ inputs.image-name }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
@@ -104,24 +109,14 @@ jobs:
             type=semver,pattern={{raw}}
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
-      - run: |
-          echo ${{ steps.meta.outputs.json }}
-          echo ${{ steps.meta.outputs.image }}
-      # - name: 🚀 Build
-      #   uses: docker/build-push-action@v6.13.0
-      #   with:
-      #     annotations:
-      #       org.opencontainers.image.description
-      #     build-args: |
-      #       BUILD_REF=${{ github.sha }}
-      #       BUILD_REPOSITORY=${{ github.repository }}
-      #       BUILD_VERSION=${{ needs.information.outputs.version }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
-      #     context: .
-      #     file: ${{ inputs.file }}
-      #     platforms: ${{ inputs.image-platforms }}
-      #     push: ${{ inputs.push-image }}
-      #     tags: |
-      #       ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.information.outputs.environment }}
-      #       ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.information.outputs.version }}
+      - name: 🚀 Build
+        uses: docker/build-push-action@v6.13.0
+        with:
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          context: .
+          file: ${{ inputs.file }}
+          platforms: ${{ inputs.image-platforms }}
+          push: ${{ inputs.push-image }}
+          tags: ${{ steps.meta.outputs.tags }}
