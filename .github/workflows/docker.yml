@@ -44,41 +44,11 @@ jobs:
               - .github/workflows/docker.yml
               - Dockerfile
               - rootfs/**
-  information:
-    if: needs.changes.outputs.image == 'true'
-    name: ℹ️ Gather information
-    needs:
-      - changes
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.release.outputs.environment }}
-      version: ${{ steps.release.outputs.version }}
-    steps:
-      - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v4
-      - name: ℹ️ Gather version and environment
-        id: release
-        run: |
-          sha="${{ github.sha }}"
-          environment="edge"
-          version="${sha:0:7}"
-          if [[ "${{ github.event_name }}" = "release" ]]; then
-            version="${{ github.event.release.tag_name }}"
-            version="${version,,}"
-            environment="latest"
-            if [[ "${{ github.event.release.prerelease }}" = "true" ]]; then
-              environment="beta"
-            fi
-          fi
-
-          echo "environment=${environment}" >> "$GITHUB_OUTPUT"
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
   build:
     if: needs.changes.outputs.image == 'true'
     name: 👷 Build & Deploy
     needs:
       - changes
-      - information
     runs-on: ubuntu-latest
     steps:
       - name: ⤵️ Check out code from GitHub
