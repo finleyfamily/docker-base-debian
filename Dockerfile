@@ -23,7 +23,9 @@ ENV TZ="${TZ}"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # https://github.com/linuxserver/docker-mods/blob/mod-scripts
+# hadolint ignore=DL3020
 ADD --chmod=744 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/lsiown.v1" "/usr/bin/lsiown"
+# hadolint ignore=DL3020
 ADD --chmod=755 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/with-contenv.v1" "/usr/bin/with-contenv"
 
 COPY rootfs/tmp/ /tmp/
