@@ -5,7 +5,14 @@ on:
   push:
     branches:
       - master
+      - release/**
 
 jobs:
-  docker:
-    uses: ./.github/workflows/docker.yml
+  docker-lint:
+    uses: finleyfamily/workflows/.github/workflows/docker.lint.yml@feat/docker-workflow
+  docker-build:
+    needs:
+      - docker-lint
+    uses: finleyfamily/workflows/.github/workflows/docker.build.yml@feat/docker-workflow
+  spellcheck:
+    uses: finleyfamily/workflows/.github/workflows/spellcheck.yml@master

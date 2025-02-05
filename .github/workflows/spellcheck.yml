@@ -1,9 +1,0 @@
-on:
-  pull_request:  # any pull request
-  push:
-    branches:
-      - master
-
-jobs:
-  spellcheck:
-    uses: finleyfamily/workflows/.github/workflows/spellcheck.yml@master
