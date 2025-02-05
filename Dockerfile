@@ -7,7 +7,9 @@ FROM python:3.13.1-slim-bookworm@sha256:031ebf3cde9f3719d2db385233bcb18df5162038
 # Each arg must be defined in an "ARG" instruction for each stage before it
 # can be used in the build stage.
 #
+# renovate: datasource=github-releases depName=finleyfamily/oi versioning=loose
 ARG OI_VERSION="v1.0.0"
+# renovate: datasource=github-releases depName=just-containers/s6-overlay versioning=loose
 ARG S6_OVERLAY_VERSION="v3.2.0.2"
 ARG TARGETARCH
 ARG TZ="US/Eastern"
