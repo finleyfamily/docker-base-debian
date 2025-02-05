@@ -68,7 +68,11 @@ RUN set -o errexit; \
   mkdir -p ~/.local/bin; \
   ln -s /usr/bin/batcat ~/.local/bin/bat; \
   pip install --disable-pip-version-check --no-cache-dir --no-warn-script-location --upgrade wheel setuptools; \
-  pip install --requirement /tmp/requirements.txt --disable-pip-version-check --no-cache-dir --no-warn-script-location; \
+  pip install --requirement /tmp/pipx.requirements.txt --disable-pip-version-check --no-cache-dir --no-warn-script-location; \
+  pipx install poetry --global --pip-args='--constraint=/tmp/poetry.requirements.txt --no-cache-dir'; \
+  pipx inject poetry 'poetry-dynamic-versioning[plugin]' poetry-plugin-export poetry-plugin-shell \
+    --global --pip-args='--constraint=/tmp/poetry.requirements.txt --no-cache-dir'; \
+  pipx install yq --global --pip-args='--constraint=/tmp/yq.requirements.txt --no-cache-dir'; \
   sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin; \
   curl -sSL https://raw.githubusercontent.com/finleyfamily/oi/refs/heads/master/install.py | python3 - --version "${OI_VERSION}"
 
