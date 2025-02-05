@@ -78,6 +78,7 @@ RUN set -e; \
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash; \
   source ~/.nvm/nvm.sh; \
   nvm install "lts/jod" --latest-npm; \
+  nvm alias "v22" "lts/jod"; \
   nvm alias default "lts/jod"; \
   nvm cache clear; \
   rm -rf /tmp/*;
