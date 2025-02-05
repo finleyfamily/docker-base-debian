@@ -39,6 +39,7 @@ RUN set -o errexit; \
     colordiff \
     curl \
     direnv \
+    gcc \
     git \
     iputils-ping \
     jq \
