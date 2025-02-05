@@ -41,6 +41,7 @@ RUN set -o errexit; \
     direnv \
     git \
     iputils-ping \
+    jq \
     less \
     locales \
     make \
