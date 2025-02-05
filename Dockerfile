@@ -28,6 +28,7 @@ ADD --chmod=744 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-s
 # hadolint ignore=DL3020
 ADD --chmod=755 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/with-contenv.v1" "/usr/bin/with-contenv"
 
+COPY rootfs/etc/skel/ /root/
 COPY rootfs/tmp/ /tmp/
 
 RUN set -o errexit; \

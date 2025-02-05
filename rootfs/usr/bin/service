@@ -4,28 +4,28 @@
 # ==============================================================================
 
 start() {
-    s6-svc -wU -u -T2500 "/run/service/${service}"
+  s6-svc -wU -u -T2500 "/run/service/${service}";
 }
 
 stop() {
-    s6-svc -wD -d -T2500 "/run/service/${service}"
+  s6-svc -wD -d -T2500 "/run/service/${service}";
 }
 
 restart() {
-    stop
-    start
+  stop;
+  start;
 }
 
 status() {
-    s6-svstat "/run/service/${service}"
+  s6-svstat "/run/service/${service}";
 }
 
-service="$1"
-command="$2"
+service="$1";
+command="$2";
 
 if [[ ! -d "/run/service/${service}" ]] ; then
-    echo "s6 service not found for ${service}, exiting..."
-    exit
+  echo "s6 service not found for ${service}, exiting...";
+  exit;
 fi;
 
-${command} "${service}"
+${command} "${service}";
