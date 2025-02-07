@@ -7,6 +7,8 @@ FROM python:3.13.1-slim-bookworm@sha256:031ebf3cde9f3719d2db385233bcb18df5162038
 # Each arg must be defined in an "ARG" instruction for each stage before it
 # can be used in the build stage.
 #
+# renovate: datasource=github-releases depName=twpayne/chezmoi versioning=loose
+ARG CHEZMOI_VERSION="v2.29.0"
 # renovate: datasource=github-releases depName=nvm-sh/nvm versioning=loose
 ARG NVM_VERSION="v0.40.1"
 # renovate: datasource=github-releases depName=finleyfamily/oi versioning=loose
@@ -80,7 +82,7 @@ RUN set -o errexit; \
     --global --pip-args='--constraint=/tmp/poetry.requirements.txt --no-cache-dir'; \
   pipx install yq --global --pip-args='--constraint=/tmp/yq.requirements.txt --no-cache-dir'
 
-RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin -t $CHEZMOI_VERSION
 
 RUN curl -sSL https://raw.githubusercontent.com/finleyfamily/oi/refs/heads/master/install.py | python3 - --global --version "${OI_VERSION}"
 

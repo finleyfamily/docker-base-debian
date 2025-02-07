@@ -16,6 +16,7 @@
         "noarch",
         "PGID",
         "PUID",
-        "svstat"
+        "svstat",
+        "twpayne"
     ]
 }
