@@ -1,13 +1,13 @@
 #! /usr/bin/with-contenv bash
 # shellcheck shell=bash
 
-PUID="${PUID:-568}";
-PGID="${PGID:-568}";
-USER_NAME="${_USER:-admin}";
+ARG_UID="${_UID:-568}";
+ARG_GID="${_GID:-568}";
+ARG_USER="${_USER:-admin}";
 
-groupmod -o -g "$PGID" "${USER_NAME}"
-usermod -o -u "$PUID" "${USER_NAME}"
+groupmod -o -g "$ARG_GID" "${ARG_USER}"
+usermod -o -u "$ARG_UID" "${ARG_USER}"
 
-lsiown "${USER_NAME}:${USER_NAME}" /app
-lsiown "${USER_NAME}:${USER_NAME}" /config
-lsiown "${USER_NAME}:${USER_NAME}" /defaults
+lsiown "${ARG_USER}:${ARG_USER}" /app
+lsiown "${ARG_USER}:${ARG_USER}" /config
+lsiown "${ARG_USER}:${ARG_USER}" /defaults

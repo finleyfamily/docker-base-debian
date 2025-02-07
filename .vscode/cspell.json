@@ -14,8 +14,6 @@
         "libncursesw",
         "lsiown",
         "noarch",
-        "PGID",
-        "PUID",
         "svstat",
         "twpayne"
     ]
