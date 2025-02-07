@@ -1,4 +1,4 @@
-#! /usr/bin/with-contenv /root/.local/bin/oi
+#! /usr/bin/with-contenv /usr/local/bin/oi
 # shellcheck shell=bash
 
 # This file doesn't do anything, it's just the start of the downstream image init process

@@ -70,15 +70,19 @@ RUN set -o errexit; \
     "https://github.com/mattmc3/zshrc.d" ~/.oh-my-zsh/custom/plugins/zshrc.d; \
   sed -i -e "s#bin/bash#bin/zsh#" /etc/passwd; \
   mkdir -p ~/.local/bin; \
-  ln -s /usr/bin/batcat ~/.local/bin/bat; \
+  ln -s /usr/bin/batcat ~/.local/bin/bat
+
+RUN set -o errexit; \
   pip install --disable-pip-version-check --no-cache-dir --no-warn-script-location --upgrade wheel setuptools; \
   pip install --requirement /tmp/pipx.requirements.txt --disable-pip-version-check --no-cache-dir --no-warn-script-location; \
   pipx install poetry --global --pip-args='--constraint=/tmp/poetry.requirements.txt --no-cache-dir'; \
   pipx inject poetry 'poetry-dynamic-versioning[plugin]' poetry-plugin-export poetry-plugin-shell \
     --global --pip-args='--constraint=/tmp/poetry.requirements.txt --no-cache-dir'; \
-  pipx install yq --global --pip-args='--constraint=/tmp/yq.requirements.txt --no-cache-dir'; \
-  sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin; \
-  curl -sSL https://raw.githubusercontent.com/finleyfamily/oi/refs/heads/master/install.py | python3 - --version "${OI_VERSION}"
+  pipx install yq --global --pip-args='--constraint=/tmp/yq.requirements.txt --no-cache-dir'
+
+RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+
+RUN curl -sSL https://raw.githubusercontent.com/finleyfamily/oi/refs/heads/master/install.py | python3 - --global --version "${OI_VERSION}"
 
 ###############################################################################
 # Install nvm                                                                 #
