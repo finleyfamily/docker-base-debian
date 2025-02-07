@@ -10,4 +10,5 @@ usermod -o -u "$ARG_UID" "${ARG_USER}"
 
 lsiown "${ARG_USER}:${ARG_USER}" /app
 lsiown "${ARG_USER}:${ARG_USER}" /config
+lsiown "${ARG_USER}:${ARG_USER}" /data
 lsiown "${ARG_USER}:${ARG_USER}" /defaults
