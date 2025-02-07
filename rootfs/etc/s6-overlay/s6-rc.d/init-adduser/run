@@ -1,0 +1,13 @@
+#! /usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+ARG_UID="${_UID:-568}";
+ARG_GID="${_GID:-568}";
+ARG_USER="${_USER:-admin}";
+
+groupmod -o -g "$ARG_GID" "${ARG_USER}"
+usermod -o -u "$ARG_UID" "${ARG_USER}"
+
+lsiown "${ARG_USER}:${ARG_USER}" /app
+lsiown "${ARG_USER}:${ARG_USER}" /config
+lsiown "${ARG_USER}:${ARG_USER}" /defaults

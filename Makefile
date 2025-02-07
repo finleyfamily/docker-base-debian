@@ -6,6 +6,17 @@ ifeq ($(CI), yes)
 	PRE_COMMIT_OPTS = --show-diff-on-failure --verbose
 endif
 
+PROJECT_NAME := $(shell basename $(PWD))
+IMAGE = ghcr.io/finleyfamily/$(PROJECT_NAME)
+
+help: ## show this message
+	@awk \
+		'BEGIN {FS = ":.*##"; printf "\nUsage: make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-30s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' \
+		$(MAKEFILE_LIST)
+
+build: permissions ## build docker image
+	@docker buildx build . --pull --tag $(IMAGE):local
+
 fix: run-pre-commit ## run all automatic fixes
 
 fix-md: ## automatically fix markdown format errors
@@ -36,6 +47,18 @@ lint-shellcheck: ## lint shell scripts using shellcheck
 	@echo "Running shellcheck..." && \
 	bash ./tests/shellcheck.sh && \
 	echo ""
+
+permissions: ## set script permissions
+	@find ./rootfs/etc/s6-overlay/s6-rc.d -type f \( -name run -or -name finish \) -prune -exec chmod +x {} \;
+	@find ./rootfs/usr/bin -type f -prune -exec chmod +x {} \;
+	@chmod 777 ./rootfs/tmp
+
+run:
+	@docker container run -it --rm \
+		--entrypoint /bin/zsh \
+		--name $(PROJECT_NAME) \
+		--volume "$$PWD/tests:/tests" \
+		$(IMAGE):local
 
 run-pre-commit: ## run pre-commit for all files
 	@poetry run pre-commit run $(PRE_COMMIT_OPTS) \
