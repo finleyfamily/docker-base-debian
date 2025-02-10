@@ -112,7 +112,8 @@ RUN set -o errexit; \
   if [ "${TARGETARCH}" == "arm64" ]; then export __S6_OVERLAY_ARCH="aarch64"; elif [ "${TARGETARCH}" == "arm/v7" ]; then export __S6_OVERLAY_ARCH="arm"; else export __S6_OVERLAY_ARCH="x86_64"; fi; \
   echo "using arch for s6-overlay: ${__S6_OVERLAY_ARCH}"; \
   tar -C / -Jxpf "/tmp/s6-overlay-${__S6_OVERLAY_ARCH}.tar.xz"; \
-  rm -rf /tmp/node-compile-cache;
+  rm -rf /tmp/node-compile-cache; \
+  rm -rf /tmp/*;
 
 COPY rootfs/ /
 RUN chmod 1777 /tmp
