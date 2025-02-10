@@ -15,7 +15,7 @@ help: ## show this message
 		$(MAKEFILE_LIST)
 
 build: permissions ## build docker image
-	@docker buildx build . --pull --tag $(IMAGE):local
+	@docker buildx build . --platform 'linux/amd64,linux/arm64' --pull --tag $(IMAGE):local
 
 fix: run-pre-commit ## run all automatic fixes
 
@@ -53,9 +53,16 @@ permissions: ## set script permissions
 	@find ./rootfs/usr/bin -type f -prune -exec chmod +x {} \;
 	@chmod 777 ./rootfs/tmp
 
-run:
+run: setup-dirs ## run container with zsh entrypoint
 	@docker container run -it --rm \
 		--entrypoint /bin/zsh \
+		--name $(PROJECT_NAME) \
+		--volume "$$PWD/tests:/tests" \
+		$(IMAGE):local
+
+run-init: setup-dirs ## run container with `/init` as the entrypoint to run s6-overlay
+	@docker container run -it --rm \
+		--entrypoint /init \
 		--name $(PROJECT_NAME) \
 		--volume "$$PWD/tests:/tests" \
 		$(IMAGE):local
@@ -66,6 +73,9 @@ run-pre-commit: ## run pre-commit for all files
 		--color always
 
 setup: setup-poetry setup-pre-commit setup-npm ## setup dev environment
+
+setup-dirs: ## create temp directories for testing locally
+	@mkdir -p ./tmp/{app,config,data,defaults};
 
 setup-npm: ## install node dependencies with npm
 	@npm ci

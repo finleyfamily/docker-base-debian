@@ -40,11 +40,14 @@ COPY rootfs/tmp/ /tmp/
 RUN set -o errexit; \
   apt-get update -y; \
   apt-get install -y --no-install-recommends \
+    apt-utils \
     bat \
     ca-certificates \
     colordiff \
+    cron \
     curl \
     direnv \
+    gnupg \
     git \
     iputils-ping \
     jq \
@@ -59,10 +62,12 @@ RUN set -o errexit; \
     xz-utils \
     zip \
     zsh; \
-  apt-get clean; \
-  rm -rf /var/lib/apt/lists/*; \
+  mkdir -p ~/.local/bin; \
+  ln -s /usr/bin/batcat ~/.local/bin/bat; \
+  echo "**** generate locale ****"; \
   sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen; \
   locale-gen; \
+  echo "**** install Oh My Zsh & plugins ****"; \
   git clone --depth 1 https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh; \
   git clone --single-branch --depth 1 \
     "https://github.com/zsh-users/zsh-autosuggestions" ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions; \
@@ -70,11 +75,18 @@ RUN set -o errexit; \
     "https://github.com/zsh-users/zsh-syntax-highlighting.git" ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting;\
   git clone --single-branch --depth 1 \
     "https://github.com/mattmc3/zshrc.d" ~/.oh-my-zsh/custom/plugins/zshrc.d; \
+  echo "**** create user & directories ****"; \
   sed -i -e "s#bin/bash#bin/zsh#" /etc/passwd; \
-  mkdir -p ~/.local/bin; \
-  ln -s /usr/bin/batcat ~/.local/bin/bat
+  useradd --create-home --shell /bin/zsh --uid 911 --user-group admin; \
+  usermod -G users admin; \
+  mkdir -p /app /config /data /defaults; \
+  echo "**** initial cleanup ****"; \
+  apt-get -y autoremove; \
+  apt-get clean; \
+  rm -rf /var/lib/apt/lists/* /var/tmp/* /var/log/* /usr/share/man;
 
 RUN set -o errexit; \
+  echo "**** installing python packages ****"; \
   pip install --disable-pip-version-check --no-cache-dir --no-warn-script-location --upgrade wheel setuptools; \
   pip install --requirement /tmp/pipx.requirements.txt --disable-pip-version-check --no-cache-dir --no-warn-script-location; \
   pipx install poetry --global --pip-args='--constraint=/tmp/poetry.requirements.txt --no-cache-dir'; \
@@ -90,6 +102,7 @@ RUN curl -sSL https://raw.githubusercontent.com/finleyfamily/oi/refs/heads/maste
 # Install nvm                                                                 #
 # --------------------------------------------------------------------------- #
 RUN set -e; \
+  echo "**** installing nvm & node ****"; \
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash; \
   source ~/.nvm/nvm.sh; \
   nvm install "lts/jod" --latest-npm; \
@@ -108,10 +121,12 @@ ADD https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY
 
 # cspell:words Jxpf
 RUN set -o errexit; \
+  echo "**** installing s6-overlay ****"; \
   tar -C / -Jxpf "/tmp/s6-overlay-noarch.tar.xz"; \
   if [ "${TARGETARCH}" == "arm64" ]; then export __S6_OVERLAY_ARCH="aarch64"; elif [ "${TARGETARCH}" == "arm/v7" ]; then export __S6_OVERLAY_ARCH="arm"; else export __S6_OVERLAY_ARCH="x86_64"; fi; \
   echo "using arch for s6-overlay: ${__S6_OVERLAY_ARCH}"; \
   tar -C / -Jxpf "/tmp/s6-overlay-${__S6_OVERLAY_ARCH}.tar.xz"; \
+  echo "**** final cleanup ****"; \
   rm -rf /tmp/node-compile-cache; \
   rm -rf /tmp/*;
 
