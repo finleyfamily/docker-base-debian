@@ -1,4 +1,4 @@
-#! /usr/bin/with-contenv /usr/local/bin/oi
+#! /usr/bin/with-contenv oi
 # shellcheck shell=bash
 
 for cron_user in "${_USER:-admin}" root; do

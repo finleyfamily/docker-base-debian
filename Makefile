@@ -14,6 +14,9 @@ help: ## show this message
 		'BEGIN {FS = ":.*##"; printf "\nUsage: make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-30s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' \
 		$(MAKEFILE_LIST)
 
+attach: ## attach to running container
+	@docker container attach --sig-proxy=false
+
 build: permissions ## build docker image
 	@docker buildx build . --platform 'linux/amd64,linux/arm64' --pull --tag $(IMAGE):local
 
@@ -53,19 +56,13 @@ permissions: ## set script permissions
 	@find ./rootfs/usr/bin -type f -prune -exec chmod +x {} \;
 	@chmod 777 ./rootfs/tmp
 
-run: setup-dirs ## run container with zsh entrypoint
-	@docker container run -it --rm \
-		--entrypoint /bin/zsh \
-		--name $(PROJECT_NAME) \
-		--volume "$$PWD/tests:/tests" \
-		$(IMAGE):local
-
-run-init: setup-dirs ## run container with `/init` as the entrypoint to run s6-overlay
-	@docker container run -it --rm \
+run: stop setup-dirs ## run container with `/init` as the entrypoint to run s6-overlay
+	@docker container run --detach --rm \
 		--entrypoint /init \
 		--name $(PROJECT_NAME) \
 		--volume "$$PWD/tests:/tests" \
 		$(IMAGE):local
+	@docker exec --interactive --tty $(PROJECT_NAME) /bin/zsh
 
 run-pre-commit: ## run pre-commit for all files
 	@poetry run pre-commit run $(PRE_COMMIT_OPTS) \
@@ -97,6 +94,9 @@ spellcheck: ## run cspell
 		--no-progress \
 		--relative \
 		--show-context
+
+stop: ## stops the container
+	@docker container stop $(PROJECT_NAME) || printf '';
 
 test: ## run tests
 	@echo "no tests configured for this project"
