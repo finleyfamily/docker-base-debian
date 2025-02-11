@@ -133,7 +133,6 @@ RUN set -o errexit; \
 COPY rootfs/ /
 RUN chmod 1777 /tmp
 
-# Child images need to set this entrypoint if running an app
-# ENTRYPOINT ["/init"]
+ENTRYPOINT ["/init"]
 
 CMD ["/bin/zsh"]
