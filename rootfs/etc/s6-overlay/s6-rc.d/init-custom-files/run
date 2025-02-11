@@ -1,4 +1,4 @@
-#! /usr/bin/with-contenv /usr/local/bin/oi
+#! /usr/bin/with-contenv oi
 # shellcheck shell=bash
 
 # Directories
@@ -11,7 +11,7 @@ if [[ -e "${SCRIPTS_DIR}" ]] && [[ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)"
     NAME="$(basename "${SCRIPT}")"
     if [[ -f "${SCRIPT}" ]]; then
       oi::log.info "[custom-init] ${NAME}: executing..."
-      /root/.local/lib/oi/oi "${SCRIPT}"
+      /usr/local/bin/oi "${SCRIPT}"
       oi::log.info "[custom-init] ${NAME}: exited $?"
     elif [[ ! -f "${SCRIPT}" ]]; then
       oi::log.warning "[custom-init] ${NAME}: is not a file"
