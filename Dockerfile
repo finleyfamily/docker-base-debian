@@ -134,5 +134,3 @@ COPY rootfs/ /
 RUN chmod 1777 /tmp
 
 ENTRYPOINT ["/init"]
-
-CMD ["/bin/zsh"]
