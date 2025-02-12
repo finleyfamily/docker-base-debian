@@ -65,25 +65,19 @@ Configuration is done through a combination of environment variables and volumes
 
 #### `/config`
 
-The `/config` volume is used to store the majority of persistent [code-server] & SSH data.
-
-| Path within `/config`               | Description                                                                                                                 |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `chezmoi.(json\|jsonc\|toml\|yaml)` | [`chezmoi`] config file that will be symlinked to `/root/.config/chezmoi/chezmoi.<format>` (extension based on file format) |
+The `/config` volume is used to store the majority of configuration files and persistant data.
 
 #### `/root/.local/share/chezmoi`
 
 While optional, a volume can be used to cache the [`chezmoi`] git repository.
 
-> [!NOTE]
-> This directory is symlinked to `.local/share/chezmoi` of the non-root user.
-
 ```yaml
-service-name:
-  volumes:
-    - source: chezmoi-repo
-      target: /root/.local/share/chezmoi
-      type: volume
+services:
+  service-name:
+    volumes:
+      - source: chezmoi-repo
+        target: /root/.local/share/chezmoi
+        type: volume
 
 volumes:
   chezmoi-repo:

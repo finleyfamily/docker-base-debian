@@ -1,30 +1,14 @@
 #! /usr/bin/with-contenv oi
 # shellcheck shell=bash
-readonly -a CHEZMOI_FORMATS=("json" "jsonc" "toml" "yaml")
 declare ARG_UID="${_UID:-568}";
 declare ARG_GID="${_GID:-568}";
 declare ARG_USER="${_USER:-admin}";
-
-function symlink::chezmoi.config {
-  # Symlink chezmoi config from /config to user home.
-  #
-  local user_home="${1:-/root}";
-  local chezmoi_config="${2:-chezmoi.toml}";
-
-  mkdir -p "${user_home}/.config/chezmoi" \
-    || oi::exit.error "Failed to create chezmoi config directory '${user_home}'";
-  ln -s "/config/${chezmoi_config}" "${user_home}/.config/chezmoi/${chezmoi_config}" \
-    || oi::exit.error "Failed to symlink '/config/${chezmoi_config}' to '${user_home}/.config/chezmoi/${chezmoi_config}'";
-}
 
 function init::chezmoi {
   # Initialize chezmoi or check of updates if already initialized.
   #
   local repo="${1:-}";  # repo that chezmoi will checkout and apply
   local user_name="${2:-admin}"  # name of non-root user
-  local user_home="/home/${user_name}";  # root chezmoi setup will be symlinked here
-  local _config_is_symlink="false";
-  local _config_file
 
   if oi::var.is_empty "${repo}"; then
     oi::log.info "git repo for chezmoi managed dotfiles not provided";
@@ -38,29 +22,6 @@ function init::chezmoi {
     chezmoi init "${repo}" --apply --color true \
       || oi::exit.error "Failed to initialize & apply chezmoi dotfiles";
   fi
-
-  for fmt in "${CHEZMOI_FORMATS[@]}"; do
-    if [[ -L "/root/.config/chezmoi/chezmoi.${fmt}" ]]; then
-      _config_is_symlink="true";
-      _config_file="chezmoi.${fmt}"
-    fi
-  done
-
-  if oi::var.is_false "${_config_is_symlink}"; then
-    mv "/root/.config/chezmoi/${_config_file}" "/config/${_config_file}" \
-      || oi::exit.error "Failed to move chezmoi config to '/config' directory";
-    symlink::chezmoi.config "/root" "${_config_file}";
-  fi
-
-  if ! oi::fs.directory_exists "${user_home}/.local/share/chezmoi"; then
-    mkdir -p "${user_home}/.local/share" \
-      || oi::exit.error "Failed to create directory '${user_home}/.local/share'";
-    lsiown "${user_name}:${user_name}" "${user_home}/.local/share" \
-      || oi::exit.error "Failed to change ownership of '${user_home}/.local/share'";
-  fi
-
-  ln -s "/root/.local/share/chezmoi" "${user_home}/.local/share/chezmoi" \
-    || oi::exit.error "Failed to symlink '/root/.local/share/chezmoi' to '${user_home}/.local/share/chezmoi'";
 }
 
 function init::user {
@@ -97,12 +58,4 @@ function init::user {
 }
 
 init::user "${ARG_USER}" "${ARG_GID}" "${ARG_UID}";
-
-for fmt in "${CHEZMOI_FORMATS[@]}"; do
-  if oi::fs.file_exists "/config/chezmoi.${fmt}"; then
-    symlink::chezmoi.config "/root" "chezmoi.${fmt}";
-    symlink::chezmoi.config "/home/${ARG_USER}" "chezmoi.${fmt}";
-  fi
-done
-
 init::chezmoi "${CHEZMOI_REPO:-}";

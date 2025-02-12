@@ -61,7 +61,7 @@ permissions: ## set script permissions
 
 run: stop setup-dirs ## run container with `/init` as the entrypoint to run s6-overlay
 	@docker container rm $(PROJECT_NAME) >/dev/null 2>&1 || true;
-	@docker container run --detach \
+	@docker container run --detach --rm \
 		--name $(PROJECT_NAME) \
 		--env "CHEZMOI_REPO=ITProKyle" \
 		--volume "$$PWD/tmp/config:/config" \
