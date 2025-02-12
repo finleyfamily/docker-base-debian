@@ -1,7 +1,8 @@
 # docker-base-debian
 
+[![GitHub Release](https://img.shields.io/github/v/release/finleyfamily/docker-base-debian?logo=github&color=2496ED)](https://github.com/finleyfamily/docker-base-debian/releases)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/finleyfamily/docker-base-debian/master.svg)](https://results.pre-commit.ci/latest/github/finleyfamily/docker-base-debian/master)
-[![renovate](https://img.shields.io/badge/enabled-brightgreen?logo=renovatebot&logoColor=%2373afae&label=renovate)](https://developer.mend.io/github/finlyfamily/docker-base-debian)
+[![renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovate&logoColor=143C8C)](https://developer.mend.io/github/finleyfamily/docker-base-debian)
 [![license][license-shield]](./LICENSE)
 
 A custom base image built with Debian Linux.
@@ -11,6 +12,11 @@ A custom base image built with Debian Linux.
 <!-- mdformat-toc start --slug=github --no-anchors --maxlevel=6 --minlevel=2 -->
 
 - [Features](#features)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Volumes](#volumes)
+    - [`/config`](#config)
+    - [`/root/.local/share/chezmoi`](#rootlocalsharechezmoi)
 
 <!-- mdformat-toc end -->
 
@@ -26,8 +32,10 @@ ______________________________________________________________________
     - `poetry-plugin-shell`
   - `yq`
 - multiple architectures
+- non-root user (defaults to `admin`)
+  - name, home directory, UID, and GID can be changed when the container is started
 - [`bat`]
-- [`chezmoi`]
+- [`chezmoi`] for dotfiles
 - [`direnv`]
 - [`jq`](https://jqlang.org/)
 - [`nvm`]
@@ -37,6 +45,52 @@ ______________________________________________________________________
   - [`zshrc.d`](https://github.com/mattmc3/zshrc.d)
 - [`oi`](https://github.com/finleyfamily/oi)
 - [`s6-overlay`]
+
+______________________________________________________________________
+
+## Configuration
+
+Configuration is done through a combination of environment variables and volumes/bind mounts.
+
+### Environment Variables
+
+| Variable       | Default | Description                                                                                         |
+| -------------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `_GID`         | `568`   | GID of the non-root user group created and used by the container.                                   |
+| `_UID`         | `568`   | UID for the non-root user created and used by the container.                                        |
+| `_USER`        | `admin` | Name of the non-root user created and used by the container.                                        |
+| `CHEZMOI_REPO` |         | Git repository that [`chezmoi`] will use to setup dotfiles. If not provided, dotfile are not setup. |
+
+### Volumes
+
+#### `/config`
+
+The `/config` volume is used to store the majority of persistent [code-server] & SSH data.
+
+| Path within `/config`               | Description                                                                                                                 |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `chezmoi.(json\|jsonc\|toml\|yaml)` | [`chezmoi`] config file that will be symlinked to `/root/.config/chezmoi/chezmoi.<format>` (extension based on file format) |
+
+#### `/root/.local/share/chezmoi`
+
+While optional, a volume can be used to cache the [`chezmoi`] git repository.
+
+> [!NOTE]
+> This directory is symlinked to `.local/share/chezmoi` of the non-root user.
+
+```yaml
+service-name:
+  volumes:
+    - source: chezmoi-repo
+      target: /root/.local/share/chezmoi
+      type: volume
+
+volumes:
+  chezmoi-repo:
+    driver: local
+    labels:
+      org.opencontainers.volume.description: Volume used to cache chezmoi dotfile repository.
+```
 
 [license-shield]: https://img.shields.io/github/license/finleyfamily/docker-base-debian.svg
 [oh my zsh]: https://github.com/ohmyzsh/ohmyzsh

@@ -51,18 +51,24 @@ lint-shellcheck: ## lint shell scripts using shellcheck
 	bash ./tests/shellcheck.sh && \
 	echo ""
 
+logs: ## retrieve logs from the running container
+	@docker container logs --follow --timestamps $(PROJECT_NAME)
+
 permissions: ## set script permissions
 	@find ./rootfs/etc/s6-overlay/s6-rc.d -type f \( -name run -or -name finish \) -prune -exec chmod +x {} \;
 	@find ./rootfs/usr/bin -type f -prune -exec chmod +x {} \;
 	@chmod 777 ./rootfs/tmp
 
 run: stop setup-dirs ## run container with `/init` as the entrypoint to run s6-overlay
-	@docker container run --detach --rm \
-		--entrypoint /init \
+	@docker container rm $(PROJECT_NAME) >/dev/null 2>&1 || true;
+	@docker container run --detach \
 		--name $(PROJECT_NAME) \
+		--env "CHEZMOI_REPO=ITProKyle" \
+		--volume "$$PWD/tmp/config:/config" \
+		--volume "$$PWD/tmp/data:/data" \
+		--volume "$$PWD/tmp/defaults:/defaults" \
 		--volume "$$PWD/tests:/tests" \
 		$(IMAGE):local
-	@docker exec --interactive --tty $(PROJECT_NAME) /bin/zsh
 
 run-pre-commit: ## run pre-commit for all files
 	@poetry run pre-commit run $(PRE_COMMIT_OPTS) \
@@ -96,7 +102,10 @@ spellcheck: ## run cspell
 		--show-context
 
 stop: ## stops the container
-	@docker container stop $(PROJECT_NAME) || printf '';
+	@docker container stop $(PROJECT_NAME) >/dev/null 2>&1 || true;
 
 test: ## run tests
 	@echo "no tests configured for this project"
+
+zsh: ## connect to container with zsh shell
+	@docker exec --interactive --tty $(PROJECT_NAME) /bin/zsh
