@@ -16,7 +16,7 @@ function init::chezmoi {
   fi
 
   if oi::fs.directory_exists "/root/.local/share/chezmoi"; then
-    chezmoi update --apply --color true \
+    chezmoi update --apply --color true --force \
       || oi::log.warning "Failed to update & apply chezmoi dotfiles";
   else
     chezmoi init "${repo}" --apply --color true \
