@@ -20,9 +20,9 @@ attach: ## attach to running container
 build: permissions ## build docker image
 	@docker buildx build . --platform 'linux/amd64,linux/arm64' --pull --tag $(IMAGE):local
 
-fix: run-pre-commit ## run all automatic fixes
+fix: run.pre-commit ## run all automatic fixes
 
-fix-md: ## automatically fix markdown format errors
+fix.md: ## automatically fix markdown format errors
 	@poetry run pre-commit run mdformat --all-files
 
 lint: ## run all linters
@@ -31,11 +31,11 @@ lint: ## run all linters
 		echo "skipped linters that have dedicated jobs"; \
 	else \
 		echo ""; \
-		$(MAKE) --no-print-directory lint-docker lint-shellcheck; \
+		$(MAKE) --no-print-directory lint.docker lint.shellcheck; \
 	fi
 
 # for more info: https://github.com/hadolint/hadolint
-lint-docker: ## lint Dockerfile
+lint.docker: ## lint Dockerfile
 	@echo "Running hadolint..."
 	@if [[ $$(command -v hadolint) ]]; then \
 		find . -name "*Dockerfile*" -type f | \
@@ -46,7 +46,7 @@ lint-docker: ## lint Dockerfile
 	fi
 	@echo ""
 
-lint-shellcheck: ## lint shell scripts using shellcheck
+lint.shellcheck: ## lint shell scripts using shellcheck
 	@echo "Running shellcheck..." && \
 	bash ./tests/shellcheck.sh && \
 	echo ""
@@ -59,7 +59,7 @@ permissions: ## set script permissions
 	@find ./rootfs/usr/bin -type f -prune -exec chmod +x {} \;
 	@chmod 777 ./rootfs/tmp
 
-run: stop setup-dirs ## run container with `/init` as the entrypoint to run s6-overlay
+run: stop setup.dirs ## run container with `/init` as the entrypoint to run s6-overlay
 	@docker container rm $(PROJECT_NAME) >/dev/null 2>&1 || true;
 	@docker container run --detach --rm \
 		--name $(PROJECT_NAME) \
@@ -70,23 +70,23 @@ run: stop setup-dirs ## run container with `/init` as the entrypoint to run s6-o
 		--volume "$$PWD/tests:/tests" \
 		$(IMAGE):local
 
-run-pre-commit: ## run pre-commit for all files
+run.pre-commit: ## run pre-commit for all files
 	@poetry run pre-commit run $(PRE_COMMIT_OPTS) \
 		--all-files \
 		--color always
 
-setup: setup-poetry setup-pre-commit setup-npm ## setup dev environment
+setup: setup.poetry setup.pre-commit setup.npm ## setup dev environment
 
-setup-dirs: ## create temp directories for testing locally
+setup.dirs: ## create temp directories for testing locally
 	@mkdir -p ./tmp/{app,config,data,defaults};
 
-setup-npm: ## install node dependencies with npm
+setup.npm: ## install node dependencies with npm
 	@npm ci
 
-setup-poetry: ## setup python virtual environment
+setup.poetry: ## setup python virtual environment
 	@poetry sync $(POETRY_OPTS)
 
-setup-pre-commit: ## install pre-commit git hooks
+setup.pre-commit: ## install pre-commit git hooks
 	@poetry run pre-commit install
 
 spellcheck: ## run cspell
