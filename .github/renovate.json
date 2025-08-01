@@ -15,6 +15,16 @@
             "rangeStrategy": "bump"
         },
         {
+            "dependencyDashboardApproval": false,
+            "matchFileNames": [
+                "Dockerfile",
+                "Dockerfile.*"
+            ],
+            "matchPackageNames": [
+                "python"
+            ]
+        },
+        {
             "addLabels": [
                 "changelog:major"
             ],
