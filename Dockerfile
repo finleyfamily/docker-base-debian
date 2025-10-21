@@ -1,5 +1,5 @@
 
-FROM python:3.14.0-slim-bookworm@sha256:ee1628e439affe23432bf7353ce431e24d8fc026cc4f6ec649f6f3615e7c4142
+FROM python:3.14.0-slim-bookworm@sha256:dcf261518d1c6be54c9fd4fae2ef5f1e52ff65b49fa99471b11ebc23d973fb01
 
 ###############################################################################
 # Image Arguments                                                             #
