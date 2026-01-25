@@ -14,7 +14,7 @@ ARG NVM_VERSION="v0.40.3"
 # renovate: datasource=github-releases depName=finleyfamily/oi versioning=loose
 ARG OI_VERSION="v1.0.0"
 # renovate: datasource=github-releases depName=just-containers/s6-overlay versioning=loose
-ARG S6_OVERLAY_VERSION="v3.2.1.0"
+ARG S6_OVERLAY_VERSION="v3.2.2.0"
 ARG TARGETARCH
 ARG TZ="US/Eastern"
 
