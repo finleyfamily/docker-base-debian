@@ -10,7 +10,7 @@ FROM python:3.14.6-slim-bookworm@sha256:86f975aca15cf04a40b399eebede9aea7c82eae0
 # renovate: datasource=github-releases depName=twpayne/chezmoi versioning=loose
 ARG CHEZMOI_VERSION="v2.71.0"
 # renovate: datasource=github-releases depName=nvm-sh/nvm versioning=loose
-ARG NVM_VERSION="v0.40.5"
+ARG NVM_VERSION="v0.40.6"
 # renovate: datasource=github-releases depName=finleyfamily/oi versioning=loose
 ARG OI_VERSION="v1.0.0"
 # renovate: datasource=github-releases depName=just-containers/s6-overlay versioning=loose
