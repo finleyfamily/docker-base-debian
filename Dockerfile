@@ -8,7 +8,7 @@ FROM python:3.14.7-slim-bookworm@sha256:9ab8d9c8514b44f90cf0029dd42fdd7e9e211e63
 # can be used in the build stage.
 #
 # renovate: datasource=github-releases depName=twpayne/chezmoi versioning=loose
-ARG CHEZMOI_VERSION="v2.72.1"
+ARG CHEZMOI_VERSION="v2.72.2"
 # renovate: datasource=github-releases depName=nvm-sh/nvm versioning=loose
 ARG NVM_VERSION="v0.40.7"
 # renovate: datasource=github-releases depName=finleyfamily/oi versioning=loose
