@@ -17,6 +17,8 @@ A custom base image built with Debian Linux.
   - [Volumes](#volumes)
     - [`/config`](#config)
     - [`/root/.local/share/chezmoi`](#rootlocalsharechezmoi)
+- [Developer Guide](#developer-guide)
+  - [Regenerating `requirements.txt` Files](#regenerating-requirementstxt-files)
 
 <!-- mdformat-toc end -->
 
@@ -85,6 +87,21 @@ volumes:
     labels:
       org.opencontainers.volume.description: Volume used to cache chezmoi dotfile repository.
 ```
+
+______________________________________________________________________
+
+## Developer Guide
+
+### Regenerating `requirements.txt` Files
+
+Occasionally, the `requirements.txt` files may need to be regenerated to resolve errors.
+
+1. `cd rootfs/tmp`
+1. `poetry init`
+1. Proceed through the init process.
+1. Install once of the top-level packages (e.g. `poetry add pipx`).
+1. Export the dependencies to the corresponding `requirements.txt` file (e.g. `poetry export --without-hashes --without-urls > pipx.requirements.txt`).
+1. Repeat for the remainder of the `requirements.txt` files.
 
 [license-shield]: https://img.shields.io/github/license/finleyfamily/docker-base-debian.svg
 [oh my zsh]: https://github.com/ohmyzsh/ohmyzsh

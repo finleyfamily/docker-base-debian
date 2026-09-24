@@ -77,6 +77,11 @@
             ]
         }
     ],
+    "pip_requirements": {
+        "managerFilePatterns": [
+            "/(^|/)[\\w-\\.]*requirements([-._]\\w+)?\\.(txt|pip)$/"
+        ]
+    },
     "reviewers": [
         "ITProKyle"
     ]
