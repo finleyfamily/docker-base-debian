@@ -1,4 +1,4 @@
-anyio==4.15.1 ; python_version >= "3.14" and python_version < "4.0"
+anyio==4.16.0 ; python_version >= "3.14" and python_version < "4.0"
 build==1.6.1 ; python_version >= "3.14" and python_version < "4.0"
 cachecontrol==0.14.4 ; python_version >= "3.14" and python_version < "4.0"
 certifi==2026.10.23 ; python_version >= "3.14" and python_version < "4.0"
